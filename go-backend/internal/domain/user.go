@@ -21,34 +21,32 @@ type User struct {
 }
 
 func NewUser(name, email, password string) (*User, error) {
+	if err := isValidEmail(email); err != nil {
+		return nil, err
+	}
+
+	if err := isValidPassword(password); err != nil {
+		return nil, err
+	}
+
+	hashedPassword, err := hashPassword(password)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao gerar hash da senha: %v", err)
+	}
 
 	user := &User{
 		ID:        uuid.New().String(),
 		Name:      name,
 		Email:     email,
-		Password:  password,
+		Password:  hashedPassword,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
-	if err := user.isValidEmail(email); err != nil {
-		return nil, err
-	}
-
-	if err := user.isValidPassword(password); err != nil {
-		return nil, err
-	}
-
-	hashedPassword, err := user.hashPassword(password)
-	if err != nil {
-		return nil, fmt.Errorf("erro ao gerar hash da senha: %v", err)
-	}
-	user.Password = hashedPassword
-
 	return user, nil
 }
 
-func (u *User) isValidEmail(email string) error {
+func isValidEmail(email string) error {
 	regex := `(?i)^(?:[a-z0-9!#$%&'*+/=?^_` + "`" + `{|}~.-]+)@(?:[a-z0-9-]+\.)+[a-z]{2,}$`
 	matched, err := regexp.MatchString(regex, email)
 	if err != nil {
@@ -62,7 +60,7 @@ func (u *User) isValidEmail(email string) error {
 	return nil
 }
 
-func (u *User) isValidPassword(password string) error {
+func isValidPassword(password string) error {
 	regex := `^[^\s]{6,}$`
 	matched, err := regexp.MatchString(regex, password)
 	if err != nil {
@@ -76,7 +74,7 @@ func (u *User) isValidPassword(password string) error {
 	return nil
 }
 
-func (u *User) hashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return "", err
