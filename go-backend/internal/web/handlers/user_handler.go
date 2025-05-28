@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/dto"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/service"
 )
@@ -25,9 +26,19 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	output, err := h.userService.CreateUser(r.Context(), input)
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		switch err {
+		case domain.ErrInvalidEmail:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		case domain.ErrInvalidPassword:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Context-Type", "application/json")

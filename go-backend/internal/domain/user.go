@@ -11,6 +11,11 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	ErrInvalidEmail    = errors.New("e-mail inválido")
+	ErrInvalidPassword = errors.New("senha inválida")
+)
+
 type User struct {
 	ID        string
 	Name      string
@@ -50,11 +55,12 @@ func isValidEmail(email string) error {
 	regex := `(?i)^(?:[a-z0-9!#$%&'*+/=?^_` + "`" + `{|}~.-]+)@(?:[a-z0-9-]+\.)+[a-z]{2,}$`
 	matched, err := regexp.MatchString(regex, email)
 	if err != nil {
-		return fmt.Errorf("erro ao validar e-mail: %v", err)
+		fmt.Printf("erro ao validar e-mail: %v", err)
+		return err
 	}
 
 	if !matched {
-		return errors.New("e-mail inválido")
+		return ErrInvalidEmail
 	}
 
 	return nil
@@ -64,11 +70,12 @@ func isValidPassword(password string) error {
 	regex := `^[^\s]{6,}$`
 	matched, err := regexp.MatchString(regex, password)
 	if err != nil {
-		return fmt.Errorf("erro ao validar senha: %v", err)
+		fmt.Printf("erro ao validar senha: %v", err)
+		return err
 	}
 
 	if !matched {
-		return errors.New("senha inválida")
+		return ErrInvalidPassword
 	}
 
 	return nil
@@ -77,6 +84,7 @@ func isValidPassword(password string) error {
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
+		fmt.Printf("erro ao criptografar a senha: %v", err)
 		return "", err
 	}
 	return string(bytes), nil
