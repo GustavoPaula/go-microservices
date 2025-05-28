@@ -26,7 +26,7 @@ func (r *userRepository) Save(ctx context.Context, user *domain.User) error {
 	RETURNING id
 	`
 
-	err := r.db.QueryRow(ctx, query, user.ID, user.Name, user.Email, user.Password, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
+	err := r.db.QueryRow(ctx, query, user.Name, user.Email, user.Password, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
 	if err != nil {
 		return err
 	}
