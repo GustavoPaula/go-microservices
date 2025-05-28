@@ -29,6 +29,7 @@ func FromUser(user *domain.User) UserOutput {
 	return UserOutput{
 		ID:        user.ID,
 		Name:      user.Name,
+		Email:     user.Email,
 		Password:  user.Password,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
