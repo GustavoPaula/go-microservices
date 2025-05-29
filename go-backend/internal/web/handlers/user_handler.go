@@ -9,18 +9,17 @@ import (
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/service"
 )
 
-type UserHandler struct {
-	userService *service.UserService
+type UserHandler_impl struct {
+	userService *service.UserService_impl
 }
 
-func NewUserHandler(userService *service.UserService) *UserHandler {
-	return &UserHandler{userService: userService}
+func NewUserHandler(userService *service.UserService_impl) *UserHandler_impl {
+	return &UserHandler_impl{userService: userService}
 }
 
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler_impl) Create(w http.ResponseWriter, r *http.Request) {
 	var input dto.CreateUserInput
-	err := json.NewDecoder(r.Body).Decode(&input)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

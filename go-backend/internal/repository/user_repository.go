@@ -7,19 +7,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type UserRepository interface {
+type UserRepository_i interface {
 	Save(ctx context.Context, user *domain.User) error
 }
 
-type userRepository struct {
+type UserRepository_impl struct {
 	db *pgxpool.Pool
 }
 
-func NewUserRepository(db *pgxpool.Pool) *userRepository {
-	return &userRepository{db: db}
+func NewUserRepository(db *pgxpool.Pool) UserRepository_i {
+	return &UserRepository_impl{db: db}
 }
 
-func (r *userRepository) Save(ctx context.Context, user *domain.User) error {
+func (r *UserRepository_impl) Save(ctx context.Context, user *domain.User) error {
 	query := `
 	INSERT INTO users (name, email, password, created_at, updated_at) 
 	VALUES ($1, $2, $3, $4, $5) 

@@ -11,11 +11,11 @@ import (
 type Server struct {
 	router      *chi.Mux
 	server      *http.Server
-	userService *service.UserService
+	userService *service.UserService_impl
 	port        string
 }
 
-func NewServer(userService *service.UserService, port string) *Server {
+func NewServer(userService *service.UserService_impl, port string) *Server {
 	return &Server{
 		router:      chi.NewRouter(),
 		userService: userService,
