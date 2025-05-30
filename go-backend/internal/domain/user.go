@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain/commons"
@@ -28,7 +27,7 @@ func NewUser(name, email, password string) (*User, error) {
 
 	hashedPassword, err := commons.HashPassword(password)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao gerar hash da senha: %v", err)
+		return nil, err
 	}
 
 	user := &User{

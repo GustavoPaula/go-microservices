@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/GustavoPaula/go-microservices/go-backend/internal/database/config"
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/database/dbconfig"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/repository"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/service"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/web/server"
@@ -20,11 +23,18 @@ func getEnv(key, defaultValue string) string {
 }
 
 func main() {
+	l := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(l)
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error ao carregar o arquivo .env")
 	}
 
-	db, err := config.Connection(context.Background())
+	ctx := context.Background()
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGKILL)
+	defer cancel()
+
+	db, err := dbconfig.Connection(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +46,10 @@ func main() {
 	srv := server.NewServer(userService, port)
 	srv.ConfigureRoutes()
 
-	if err := srv.Start(); err != nil {
-		log.Fatal("Error starting server: ", err)
+	if err := srv.Start(ctx); err != nil {
+		slog.Error("Erro ao iniciar o servidor HTTP", "error", err)
+		return
 	}
+
+	slog.Info("Servidor offline!")
 }

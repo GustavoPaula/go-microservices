@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,6 +29,7 @@ func (r *UserRepository_impl) Save(ctx context.Context, user *domain.User) error
 
 	err := r.db.QueryRow(ctx, query, user.Name, user.Email, user.Password, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
 	if err != nil {
+		slog.Error("Erro ao gravar dados na tabela users", "error", err)
 		return err
 	}
 
