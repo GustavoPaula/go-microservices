@@ -13,6 +13,7 @@ type UserRepository_i interface {
 	Save(ctx context.Context, user *domain.User) error
 	FindById(ctx context.Context, id string) (*domain.User, error)
 	FindByEmail(ctx context.Context, email string) (*domain.User, error)
+	Update(ctx context.Context, user *domain.User, id string) error
 }
 
 type UserRepository_impl struct {
@@ -30,7 +31,8 @@ func (r *UserRepository_impl) Save(ctx context.Context, user *domain.User) error
 	RETURNING id
 	`
 
-	err := r.db.QueryRow(ctx, query, user.Name, user.Email, user.Password, user.IsActive, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
+	err := r.db.QueryRow(ctx, query, user.Name, user.Email, user.Password, user.IsActive, user.CreatedAt, user.UpdatedAt).
+		Scan(&user.ID)
 	if err != nil {
 		slog.Error("Erro ao gravar dados na tabela users", "error", err)
 		return err
@@ -48,7 +50,8 @@ func (r *UserRepository_impl) FindById(ctx context.Context, id string) (*domain.
 	WHERE id = $1
 	`
 
-	err := r.db.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, id).
+		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
 
 	if err == sql.ErrNoRows || err != nil {
 		return nil, domain.ErrUserNotFound
@@ -66,11 +69,34 @@ func (r *UserRepository_impl) FindByEmail(ctx context.Context, email string) (*d
 	WHERE email = $1
 	`
 
-	err := r.db.QueryRow(ctx, query, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, email).
+		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
 
 	if err == sql.ErrNoRows || err != nil {
 		return nil, domain.ErrUserNotFound
 	}
 
 	return &user, nil
+}
+
+func (r *UserRepository_impl) Update(ctx context.Context, user *domain.User, id string) error {
+	query := `
+	UPDATE users
+	SET name = $1, email = $2, password = $3, is_active = $4, updated_at = $5
+	WHERE id = $6
+	`
+
+	result, err := r.db.Exec(ctx, query, user.Name, user.Email, user.Password, user.IsActive, user.UpdatedAt, id)
+
+	if err != nil {
+		slog.Error("Erro ao atualizar os dados do usuário", "error", err)
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		slog.Error("Nenhum usuário encontrado com o id", "error", err)
+		return err
+	}
+
+	return nil
 }

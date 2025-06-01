@@ -57,3 +57,19 @@ func (s *UserService_impl) GetByEmail(ctx context.Context, email string) (*dto.U
 	output := dto.FromUser(user)
 	return &output, nil
 }
+
+func (s *UserService_impl) Update(ctx context.Context, input dto.CreateUserInput, id string) (*dto.UserOutput, error) {
+	user, err := dto.ToUser(input)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.repository.Update(ctx, user, id)
+	if err != nil {
+		return nil, err
+	}
+
+	output := dto.FromUser(user)
+	return &output, nil
+}

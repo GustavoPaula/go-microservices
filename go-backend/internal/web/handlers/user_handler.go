@@ -92,3 +92,26 @@ func (h *UserHandler_impl) GetByEmail(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteSuccess(w, http.StatusOK, "usuário encontrado!", output)
 }
+
+func (h *UserHandler_impl) Update(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		response.WriteError(w, http.StatusBadRequest, "id é obrigatório")
+		return
+	}
+
+	var input dto.CreateUserInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	output, err := h.service.Update(r.Context(), input, id)
+
+	if err != nil {
+		response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
+		return
+	}
+
+	response.WriteSuccess(w, http.StatusOK, "usuário encontrado!", output)
+}
