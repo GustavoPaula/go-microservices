@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain"
@@ -10,6 +11,7 @@ import (
 
 type UserRepository_i interface {
 	Save(ctx context.Context, user *domain.User) error
+	FindById(ctx context.Context, id string) (*domain.User, error)
 }
 
 type UserRepository_impl struct {
@@ -34,4 +36,26 @@ func (r *UserRepository_impl) Save(ctx context.Context, user *domain.User) error
 	}
 
 	return nil
+}
+
+func (r *UserRepository_impl) FindById(ctx context.Context, id string) (*domain.User, error) {
+	var user domain.User
+
+	query := `
+	SELECT id, name, email, password, created_at, updated_at
+	FROM users
+	WHERE id = $1
+	`
+
+	err := r.db.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+
+	if err == sql.ErrNoRows {
+		return nil, domain.ErrUserNotFound
+	}
+	if err != nil {
+		slog.Error("Erro ao buscar usuário pelo id", "error", err)
+		return nil, err
+	}
+
+	return &user, nil
 }

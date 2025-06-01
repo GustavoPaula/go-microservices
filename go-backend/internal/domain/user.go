@@ -1,10 +1,15 @@
 package domain
 
 import (
+	"errors"
 	"time"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain/commons"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrUserNotFound = errors.New("usuário não encontrado")
 )
 
 type User struct {

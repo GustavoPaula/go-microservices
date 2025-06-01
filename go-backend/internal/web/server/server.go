@@ -30,7 +30,10 @@ func NewServer(userService *service.UserService_impl, port string) *Server {
 func (s *Server) ConfigureRoutes() {
 	userHandler := handlers.NewUserHandler(s.userService)
 
-	s.router.Post("/users", userHandler.Create)
+	s.router.Group(func(r chi.Router) {
+		s.router.Post("/users", userHandler.Create)
+		s.router.Get("/users/{id}", userHandler.GetById)
+	})
 }
 
 func (s *Server) Start(ctx context.Context) error {
