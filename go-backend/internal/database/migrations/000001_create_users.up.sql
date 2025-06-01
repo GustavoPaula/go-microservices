@@ -7,3 +7,13 @@ CREATE TABLE IF NOT EXISTS users (
   "created_at"  TIMESTAMP NOT NULL,
   "updated_at"  TIMESTAMP NOT NULL
 );
+
+INSERT INTO users (id, name, email, password, is_active, created_at, updated_at)
+VALUES (
+  gen_random_uuid(), 
+  'admin', 
+  'admin@admin.com', 
+  '$2a$14$R704Gt1pYcL2X/8KAqqsvO8HnGm13DVo3HILfcZSxavsUxIQG6mo2', 
+  TRUE, 
+  current_timestamp, 
+  current_timestamp);

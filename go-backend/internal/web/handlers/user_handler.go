@@ -22,6 +22,11 @@ func NewUserHandler(service *service.UserService_impl) *UserHandler_impl {
 
 func (h *UserHandler_impl) Create(w http.ResponseWriter, r *http.Request) {
 	var input dto.CreateUserInput
+
+	if !input.IsActive {
+		input.IsActive = true
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
