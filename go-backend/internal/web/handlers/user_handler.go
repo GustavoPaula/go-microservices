@@ -38,7 +38,7 @@ func (h *UserHandler_impl) Create(w http.ResponseWriter, r *http.Request) {
 			response.WriteError(w, http.StatusBadRequest, err.Error())
 			return
 		default:
-			response.WriteError(w, http.StatusInternalServerError, err.Error())
+			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
 			return
 		}
 	}
@@ -60,7 +60,7 @@ func (h *UserHandler_impl) GetById(w http.ResponseWriter, r *http.Request) {
 			response.WriteError(w, http.StatusBadRequest, err.Error())
 			return
 		default:
-			response.WriteError(w, http.StatusInternalServerError, err.Error())
+			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
 			return
 		}
 	}
