@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	ErrUserNotFound = errors.New("usuário não encontrado")
+	ErrUserNotFound      = errors.New("usuário não encontrado")
+	ErrUserAlreadyExists = errors.New("e-mail já cadastrado")
 )
 
 type User struct {

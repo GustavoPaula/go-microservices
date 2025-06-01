@@ -37,6 +37,9 @@ func (h *UserHandler_impl) Create(w http.ResponseWriter, r *http.Request) {
 		case commons.ErrInvalidPassword:
 			response.WriteError(w, http.StatusBadRequest, err.Error())
 			return
+		case domain.ErrUserAlreadyExists:
+			response.WriteError(w, http.StatusBadRequest, err.Error())
+			return
 		default:
 			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
 			return
@@ -54,6 +57,28 @@ func (h *UserHandler_impl) GetById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	output, err := h.service.GetById(r.Context(), id)
+	if err != nil {
+		switch err {
+		case domain.ErrUserNotFound:
+			response.WriteError(w, http.StatusBadRequest, err.Error())
+			return
+		default:
+			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
+			return
+		}
+	}
+
+	response.WriteSuccess(w, http.StatusOK, "usuário encontrado!", output)
+}
+
+func (h *UserHandler_impl) GetByEmail(w http.ResponseWriter, r *http.Request) {
+	var input dto.CreateUserInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	output, err := h.service.GetByEmail(r.Context(), input.Email)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
