@@ -10,6 +10,7 @@ type CreateUserInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	IsActive bool   `json:"is_active,omitempty"`
 }
 
 type UserOutput struct {
@@ -17,12 +18,13 @@ type UserOutput struct {
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
+	IsActive  bool      `json:"is_active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func ToUser(input CreateUserInput) (*domain.User, error) {
-	return domain.NewUser(input.Name, input.Email, input.Password)
+	return domain.NewUser(input.Name, input.Email, input.Password, input.IsActive)
 }
 
 func FromUser(user *domain.User) UserOutput {
@@ -31,6 +33,7 @@ func FromUser(user *domain.User) UserOutput {
 		Name:      user.Name,
 		Email:     user.Email,
 		Password:  user.Password,
+		IsActive:  user.IsActive,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}

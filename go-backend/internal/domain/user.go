@@ -18,11 +18,12 @@ type User struct {
 	Name      string
 	Email     string
 	Password  string
+	IsActive  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func NewUser(name, email, password string) (*User, error) {
+func NewUser(name, email, password string, isActive bool) (*User, error) {
 	if err := commons.IsValidEmail(email); err != nil {
 		return nil, err
 	}
@@ -41,6 +42,7 @@ func NewUser(name, email, password string) (*User, error) {
 		Name:      name,
 		Email:     email,
 		Password:  hashedPassword,
+		IsActive:  isActive,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
