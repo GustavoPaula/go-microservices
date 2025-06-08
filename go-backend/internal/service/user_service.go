@@ -70,6 +70,21 @@ func (s *UserService_impl) Put(ctx context.Context, input dto.CreateUserInput, i
 		return nil, err
 	}
 
-	output := dto.FromUser(user)
+	userUpdated, err := s.repository.FindById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	output := dto.FromUser(userUpdated)
+	return &output, nil
+}
+
+func (s *UserService_impl) SoftDelete(ctx context.Context, id string) (*dto.UserOutput, error) {
+	userDeleted, err := s.repository.SoftDelete(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	output := dto.FromUser(userDeleted)
 	return &output, nil
 }

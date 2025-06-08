@@ -35,6 +35,7 @@ func (s *Server) ConfigureRoutes() {
 		s.router.Get("/users/{id}", userHandler.GetById)
 		s.router.Get("/users", userHandler.GetByEmail)
 		s.router.Put("/users/{id}", userHandler.Put)
+		s.router.Delete("/users/{id}", userHandler.SoftDelete)
 	})
 }
 

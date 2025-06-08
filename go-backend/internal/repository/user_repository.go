@@ -14,6 +14,7 @@ type UserRepository_i interface {
 	FindById(ctx context.Context, id string) (*domain.User, error)
 	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 	Put(ctx context.Context, user *domain.User, id string) error
+	SoftDelete(ctx context.Context, id string) (*domain.User, error)
 }
 
 type UserRepository_impl struct {
@@ -98,8 +99,31 @@ func (r *UserRepository_impl) Put(ctx context.Context, user *domain.User, id str
 
 	if result.RowsAffected() == 0 {
 		slog.Error("Nenhum usuário encontrado com o id", "error", err)
-		return err
+		return domain.ErrUserNotFound
 	}
 
 	return nil
+}
+
+func (r *UserRepository_impl) SoftDelete(ctx context.Context, id string) (*domain.User, error) {
+	var user domain.User
+	query := `
+		UPDATE users
+		SET deleted_at = current_timestamp
+		WHERE id = $1
+	`
+
+	result, err := r.db.Exec(ctx, query, id)
+
+	if err != nil {
+		slog.Error("Erro ao deletar os dados do usuário", "error", err)
+		return nil, err
+	}
+
+	if result.RowsAffected() == 0 {
+		slog.Error("Nenhum usuário encontrado com o id", "error", err)
+		return nil, err
+	}
+
+	return &user, nil
 }

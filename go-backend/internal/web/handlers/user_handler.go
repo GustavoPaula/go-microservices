@@ -22,11 +22,6 @@ func NewUserHandler(service *service.UserService_impl) *UserHandler_impl {
 
 func (h *UserHandler_impl) Create(w http.ResponseWriter, r *http.Request) {
 	var input dto.CreateUserInput
-
-	if !input.IsActive {
-		input.IsActive = true
-	}
-
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -106,11 +101,6 @@ func (h *UserHandler_impl) Put(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var input dto.CreateUserInput
-
-	if !input.IsActive {
-		input.IsActive = true
-	}
-
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -119,8 +109,37 @@ func (h *UserHandler_impl) Put(w http.ResponseWriter, r *http.Request) {
 	output, err := h.service.Put(r.Context(), input, id)
 
 	if err != nil {
-		response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
+		switch err {
+		case domain.ErrUserNotFound:
+			response.WriteError(w, http.StatusBadRequest, err.Error())
+			return
+		default:
+			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
+			return
+		}
+	}
+
+	response.WriteSuccess(w, http.StatusOK, "usuário encontrado!", output)
+}
+
+func (h *UserHandler_impl) SoftDelete(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		response.WriteError(w, http.StatusBadRequest, "id é obrigatório")
 		return
+	}
+
+	output, err := h.service.SoftDelete(r.Context(), id)
+
+	if err != nil {
+		switch err {
+		case domain.ErrUserNotFound:
+			response.WriteError(w, http.StatusBadRequest, err.Error())
+			return
+		default:
+			response.WriteError(w, http.StatusInternalServerError, "algo deu errado!")
+			return
+		}
 	}
 
 	response.WriteSuccess(w, http.StatusOK, "usuário encontrado!", output)
