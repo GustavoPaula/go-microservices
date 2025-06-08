@@ -21,6 +21,7 @@ type User struct {
 	IsActive  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 func NewUser(name, email, password string, isActive bool) (*User, error) {
@@ -45,6 +46,7 @@ func NewUser(name, email, password string, isActive bool) (*User, error) {
 		IsActive:  isActive,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+		DeletedAt: time.Now(),
 	}
 
 	return user, nil

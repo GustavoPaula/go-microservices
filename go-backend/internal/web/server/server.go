@@ -34,7 +34,7 @@ func (s *Server) ConfigureRoutes() {
 		s.router.Post("/users", userHandler.Create)
 		s.router.Get("/users/{id}", userHandler.GetById)
 		s.router.Get("/users", userHandler.GetByEmail)
-		s.router.Put("/users/{id}", userHandler.Update)
+		s.router.Put("/users/{id}", userHandler.Put)
 	})
 }
 

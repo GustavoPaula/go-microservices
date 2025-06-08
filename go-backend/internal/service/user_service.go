@@ -58,14 +58,14 @@ func (s *UserService_impl) GetByEmail(ctx context.Context, email string) (*dto.U
 	return &output, nil
 }
 
-func (s *UserService_impl) Update(ctx context.Context, input dto.CreateUserInput, id string) (*dto.UserOutput, error) {
+func (s *UserService_impl) Put(ctx context.Context, input dto.CreateUserInput, id string) (*dto.UserOutput, error) {
 	user, err := dto.ToUser(input)
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.repository.Update(ctx, user, id)
+	err = s.repository.Put(ctx, user, id)
 	if err != nil {
 		return nil, err
 	}

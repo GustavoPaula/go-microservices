@@ -13,7 +13,7 @@ type UserRepository_i interface {
 	Save(ctx context.Context, user *domain.User) error
 	FindById(ctx context.Context, id string) (*domain.User, error)
 	FindByEmail(ctx context.Context, email string) (*domain.User, error)
-	Update(ctx context.Context, user *domain.User, id string) error
+	Put(ctx context.Context, user *domain.User, id string) error
 }
 
 type UserRepository_impl struct {
@@ -48,6 +48,7 @@ func (r *UserRepository_impl) FindById(ctx context.Context, id string) (*domain.
 	SELECT id, name, email, password, is_active, created_at, updated_at
 	FROM users
 	WHERE id = $1
+		and deleted_at is null
 	`
 
 	err := r.db.QueryRow(ctx, query, id).
@@ -67,6 +68,7 @@ func (r *UserRepository_impl) FindByEmail(ctx context.Context, email string) (*d
 	SELECT id, name, email, password, is_active, created_at, updated_at
 	FROM users
 	WHERE email = $1
+		and deleted_at is null
 	`
 
 	err := r.db.QueryRow(ctx, query, email).
@@ -79,11 +81,12 @@ func (r *UserRepository_impl) FindByEmail(ctx context.Context, email string) (*d
 	return &user, nil
 }
 
-func (r *UserRepository_impl) Update(ctx context.Context, user *domain.User, id string) error {
+func (r *UserRepository_impl) Put(ctx context.Context, user *domain.User, id string) error {
 	query := `
 	UPDATE users
 	SET name = $1, email = $2, password = $3, is_active = $4, updated_at = $5
 	WHERE id = $6
+		and deleted_at is null
 	`
 
 	result, err := r.db.Exec(ctx, query, user.Name, user.Email, user.Password, user.IsActive, user.UpdatedAt, id)
