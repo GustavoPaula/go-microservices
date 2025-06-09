@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/database/dbconfig"
-	"github.com/GustavoPaula/go-microservices/go-backend/internal/repository"
-	"github.com/GustavoPaula/go-microservices/go-backend/internal/service"
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/repository/user_repository"
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/service/user_service"
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/web/server"
 	"github.com/joho/godotenv"
 )
@@ -39,8 +39,8 @@ func main() {
 		panic(err)
 	}
 
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
+	userRepository := user_repository.New(db)
+	userService := user_service.New(userRepository)
 
 	port := getEnv("HTTP_PORT", "8080")
 	srv := server.NewServer(userService, port)

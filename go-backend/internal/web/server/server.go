@@ -7,19 +7,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/GustavoPaula/go-microservices/go-backend/internal/service"
-	"github.com/GustavoPaula/go-microservices/go-backend/internal/web/handlers"
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/service/user_service"
+	"github.com/GustavoPaula/go-microservices/go-backend/internal/web/handlers/user_handlers"
 	"github.com/go-chi/chi/v5"
 )
 
 type Server struct {
 	router      *chi.Mux
 	server      *http.Server
-	userService *service.UserService_impl
+	userService *user_service.Service_impl
 	port        string
 }
 
-func NewServer(userService *service.UserService_impl, port string) *Server {
+func NewServer(userService *user_service.Service_impl, port string) *Server {
 	return &Server{
 		router:      chi.NewRouter(),
 		userService: userService,
@@ -28,7 +28,7 @@ func NewServer(userService *service.UserService_impl, port string) *Server {
 }
 
 func (s *Server) ConfigureRoutes() {
-	userHandler := handlers.NewUserHandler(s.userService)
+	userHandler := user_handlers.New(s.userService)
 
 	s.router.Group(func(r chi.Router) {
 		s.router.Post("/users", userHandler.Create)
