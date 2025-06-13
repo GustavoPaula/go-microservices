@@ -20,12 +20,7 @@ func (s *Service_impl) Create(ctx context.Context, input dto.CreateUserInput) (*
 		return nil, domain.ErrUserAlreadyExists
 	}
 
-	err = s.repository.Create(ctx, user)
-	if err != nil {
-		return nil, err
-	}
-
-	newUser, err := s.repository.GetById(ctx, user.ID)
+	newUser, err := s.repository.Create(ctx, user.Name, user.Email, user.Password, user.IsActive, user.CreatedAt, user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}

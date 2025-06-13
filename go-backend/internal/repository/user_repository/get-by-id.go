@@ -3,6 +3,7 @@ package user_repository
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/GustavoPaula/go-microservices/go-backend/internal/domain"
 )
@@ -17,10 +18,23 @@ func (r *Repository_impl) GetById(ctx context.Context, id string) (*domain.User,
 		and deleted_at is null
 	`
 
-	err := r.db.QueryRow(ctx, query, id).
-		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, id).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.Password,
+		&user.IsActive,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 
-	if err == sql.ErrNoRows || err != nil {
+	if err != nil {
+		slog.Error("Erro ao buscar usuário por id", "error", err)
+		return nil, err
+	}
+
+	if err == sql.ErrNoRows {
+		slog.Error("Nenhum usuário encontrado", "error", err)
 		return nil, domain.ErrUserNotFound
 	}
 

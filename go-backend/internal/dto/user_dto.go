@@ -10,14 +10,13 @@ type CreateUserInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	IsActive bool   `json:"is_active,omitempty"`
+	IsActive bool   `json:"is_active"`
 }
 
 type UserOutput struct {
 	ID        string    `json:"id,omitempty"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
-	Password  string    `json:"password,omitempty"`
 	IsActive  bool      `json:"is_active"`
 	CreatedAt time.Time `json:"created_at,omitzero"`
 	UpdatedAt time.Time `json:"updated_at,omitzero"`
@@ -37,7 +36,6 @@ func FromUser(user *domain.User) UserOutput {
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
-		Password:  user.Password,
 		IsActive:  user.IsActive,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,

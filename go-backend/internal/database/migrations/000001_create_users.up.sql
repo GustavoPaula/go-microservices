@@ -16,6 +16,6 @@ VALUES (
   'admin@admin.com', 
   '$2a$14$R704Gt1pYcL2X/8KAqqsvO8HnGm13DVo3HILfcZSxavsUxIQG6mo2', 
   TRUE, 
-  current_timestamp, 
+  current_timestamp,
   current_timestamp
   );
