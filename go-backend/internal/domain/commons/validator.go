@@ -4,14 +4,32 @@ import (
 	"errors"
 	"log/slog"
 	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
+	ErrInvalidName     = errors.New("nome inválido")
 	ErrInvalidEmail    = errors.New("e-mail inválido")
 	ErrInvalidPassword = errors.New("senha inválida")
 )
+
+func IsValidName(name string) (string, error) {
+	regex := `(?i)^[\p{L} ]{3,}$`
+	matched, err := regexp.MatchString(regex, name)
+	if err != nil {
+		slog.Error("Erro ao validar o nome", "error", err)
+		return "", err
+	}
+
+	if !matched {
+		return "", ErrInvalidName
+	}
+
+	nameToUpper := strings.ToUpper(name)
+	return nameToUpper, nil
+}
 
 func IsValidEmail(email string) error {
 	regex := `(?i)^(?:[a-z0-9!#$%&'*+/=?^_` + "`" + `{|}~.-]+)@(?:[a-z0-9-]+\.)+[a-z]{2,}$`

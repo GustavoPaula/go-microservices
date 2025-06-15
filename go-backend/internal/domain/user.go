@@ -25,6 +25,11 @@ type User struct {
 }
 
 func NewUser(name, email, password string, isActive bool) (*User, error) {
+	nameToUpper, err := commons.IsValidName(name)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := commons.IsValidEmail(email); err != nil {
 		return nil, err
 	}
@@ -40,7 +45,7 @@ func NewUser(name, email, password string, isActive bool) (*User, error) {
 
 	user := &User{
 		ID:        uuid.New().String(),
-		Name:      name,
+		Name:      nameToUpper,
 		Email:     email,
 		Password:  hashedPassword,
 		IsActive:  isActive,

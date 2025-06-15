@@ -32,8 +32,9 @@ func (s *Server) ConfigureRoutes() {
 
 	s.router.Group(func(r chi.Router) {
 		s.router.Post("/users", userHandler.Create)
+		s.router.Get("/users", userHandler.List)
 		s.router.Get("/users/{id}", userHandler.GetById)
-		s.router.Get("/users", userHandler.GetByEmail)
+		s.router.Get("/users/email", userHandler.GetByEmail)
 		s.router.Put("/users/{id}", userHandler.Put)
 		s.router.Delete("/users/{id}", userHandler.SoftDelete)
 	})

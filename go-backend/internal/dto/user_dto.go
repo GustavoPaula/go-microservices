@@ -42,3 +42,11 @@ func FromUser(user *domain.User) UserOutput {
 		DeletedAt: user.DeletedAt,
 	}
 }
+
+func FromUsers(users []*domain.User) []UserOutput {
+	output := make([]UserOutput, 0, len(users))
+	for _, user := range users {
+		output = append(output, FromUser(user))
+	}
+	return output
+}

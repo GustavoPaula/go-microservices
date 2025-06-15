@@ -18,10 +18,15 @@ func (r *Repository_impl) SoftDelete(ctx context.Context, id string) (*domain.Us
 	`
 
 	err := r.db.QueryRow(ctx, query, id).
-		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt)
+		Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.IsActive, &user.CreatedAt, &user.UpdatedAt, &user.DeletedAt)
 
-	if err == sql.ErrNoRows || err != nil {
-		slog.Error("Erro ao atualizar dados na tabela users", "error", err)
+	if err != nil {
+		slog.Error("Usuário não encontrado", "error", err)
+		return nil, domain.ErrUserNotFound
+	}
+
+	if err == sql.ErrNoRows {
+		slog.Error("Erro ao deletar os dados do usuário", "error", err)
 		return nil, err
 	}
 
